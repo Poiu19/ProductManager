@@ -219,7 +219,7 @@ class InterfaceWindow(QMainWindow):
         for product in json.loads(data.decode(encoding)):
             newProduct = int(product['new'])
             promProduct = int(product['prom'])
-            self.productsToDisplay.append([QtWidgets.QLabel(), QtWidgets.QLabel(), QtWidgets.QLabel()])
+            self.productsToDisplay.append([QtWidgets.QLabel(), QtWidgets.QLabel(), QtWidgets.QPushButton()])
             self.productsToDisplay[-1][0].setMaximumSize(QSize(picWidth, picHeigth))
             self.productsToDisplay[-1][0].setGeometry(QtCore.QRect(x, y, picWidth, picHeigth))
             self.productsToDisplay[-1][0].setTextFormat(Qt.RichText)
@@ -244,12 +244,10 @@ class InterfaceWindow(QMainWindow):
 
             self.productsToDisplay[-1][2].setGeometry(QtCore.QRect(x, y, picWidth, 120))
             self.productsToDisplay[-1][2].setMaximumSize(QSize(picWidth, 120))
-            self.productsToDisplay[-1][2].setTextFormat(Qt.RichText)
-            self.productsToDisplay[-1][2].setWordWrap(1)
-            self.productsToDisplay[-1][2].setText("<p>"+ product['name'] +"</p><p><font color='red'><small><u>"+ product['priceBrutto'] +"zł</u> brutto</small></font></p><p>ZOBACZ KARTĘ PRODUKTU</p>")
+            self.productsToDisplay[-1][2].setText(product['name'] +"\n\n"+ product['priceBrutto'] +"zł brutto\n\nZOBACZ KARTĘ PRODUKTU")
             self.productsToDisplay[-1][2].setObjectName("imagelabel"+str(product['id']))
-            self.productsToDisplay[-1][2].setStyleSheet("QLabel {font: bold; font-size: 12px;} QLabel:hover {color: red} ")
-            self.productsToDisplay[-1][2].setAlignment(Qt.AlignCenter)
+            self.productsToDisplay[-1][2].setStyleSheet("QPushButton {font: bold; font-size: 12px; text-align: center} QPushButton:hover {color: red} ")
+            self.productsToDisplay[-1][2].clicked.connect(partial(self.clickedProduct, product['id']))
 
             self.products_layout.addWidget(self.productsToDisplay[-1][0])
             self.products_layout.addWidget(self.productsToDisplay[-1][1])
