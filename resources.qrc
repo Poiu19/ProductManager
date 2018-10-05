@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="logo">
+    <file alias="logo">resources/logo.png</file>
+  </qresource>
+  <qresource prefix="baner">
+    <file alias="newproduct">resources/new.png</file>
+    <file alias="promproduct">resources/prom.png</file>
+  </qresource>
+  <qresource prefix="stol">
+    <file alias="stolmetalnew">resources/metalblatnew.jpg</file>
+    <file alias="stolmetalprom">resources/metalblatprom.jpg</file>
+    <file alias="stolmetal">resources/metalblat.jpg</file>
+  </qresource>
+</RCC>
