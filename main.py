@@ -11,10 +11,14 @@
 developerMode = True
 if(developerMode):
     import subprocess
-    filepath="compile.bat"
-    p = subprocess.Popen(filepath, shell=True, stdout = subprocess.PIPE)
-    stdout, stderr = p.communicate()
-    print(p.returncode)
+    filepaths = []
+    filepaths.append("C:\Python35\Lib\site-packages\PyQt5\pyrcc5.exe .\resources.qrc -o resources_rc.py")
+    filepaths.append("C:\Python35\Lib\site-packages\PyQt5\pyuic5.bat .\product.ui -o product.py")
+    filepaths.append("C:\Python35\Lib\site-packages\PyQt5\pyuic5.bat .\gui.ui -o gui.py")
+    for filepath in filepaths:
+        p = subprocess.Popen(filepath, shell=True, stdout = subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        print(p.returncode)
 
 from PyQt5.QtWidgets import QApplication
 from userinterface import InterfaceWindow
@@ -26,4 +30,5 @@ if __name__ == '__main__':
     window.createNewsList()
     window.initializeEvents()
     window.createCategories()
+    app.aboutToQuit.connect(window.exitApp)
     sys.exit(app.exec_())

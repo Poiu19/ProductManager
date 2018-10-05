@@ -14,7 +14,9 @@ from PyQt5 import *
 from PyQt5.uic import *
 from functools import partial
 from gui import Ui_MainWindow
+from productform import productDialog
 class InterfaceWindow(QMainWindow):
+    product = None
     newsContentTab = []
     def __init__(self, parent=None):
         super(InterfaceWindow, self).__init__(parent)
@@ -48,6 +50,7 @@ class InterfaceWindow(QMainWindow):
 
     def initializeEvents(self):
         self.ui.exitProgram.triggered.connect(self.exitApp)
+       # self.ui.exitProgram.triggered.connect(productDialog(self.product).closeDialog)
        # self.listNews.itemClicked.connect(partial(self.clickedNews))
        # self.listNews.itemEntered.connect(Partial(self.clickedNews))
         self.ui.listNews.currentItemChanged.connect(partial(self.clickedNews))
@@ -262,5 +265,9 @@ class InterfaceWindow(QMainWindow):
 
     def clickedProduct(self, id):
         print(id)
+        self.product = productDialog(self)
     def exitApp(self):
+        if self.product != None:
+            self.product.closeDialog()
+        self.product = None
         self.close()
