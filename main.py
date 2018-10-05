@@ -11,7 +11,7 @@
 developerMode = True
 if(developerMode):
     import subprocess
-    filepath="E:/Python projects/Club Manager/compile.bat"
+    filepath="compile.bat"
     p = subprocess.Popen(filepath, shell=True, stdout = subprocess.PIPE)
     stdout, stderr = p.communicate()
     print(p.returncode)

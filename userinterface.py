@@ -250,7 +250,6 @@ class InterfaceWindow(QMainWindow):
             self.productsToDisplay[-1][2].setObjectName("imagelabel"+str(product['id']))
             self.productsToDisplay[-1][2].setStyleSheet("QLabel {font: bold; font-size: 12px;} QLabel:hover {color: red} ")
             self.productsToDisplay[-1][2].setAlignment(Qt.AlignCenter)
-            self.productsToDisplay[-1][2].clicked.connect(partial(self.clickedProduct, product['id']))
 
             self.products_layout.addWidget(self.productsToDisplay[-1][0])
             self.products_layout.addWidget(self.productsToDisplay[-1][1])
