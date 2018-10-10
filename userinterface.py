@@ -263,9 +263,8 @@ class InterfaceWindow(QMainWindow):
             i = i+1
         self.ui.scrollAreaWidgetContents_2.setLayout(self.products_layout)
 
-    def clickedProduct(self, id):
-        print(id)
-        self.product = productDialog(self)
+    def clickedProduct(self, idP):
+        self.product = productDialog(idP, self)
     def exitApp(self):
         if self.product != None:
             self.product.closeDialog()
