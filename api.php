@@ -80,6 +80,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 		mysqli_free_result($result);
 		echo json_encode($config['products']);
 	}
+	if($obj->getData == 'product')
+	{
+		$sql_query = "SELECT `products`.`id`, `products`.`name`, `products`.`description_long`, `products`.`priceNetto`, `products`.`priceBrutto`, `products`.`pic`, `products`.`new`, `products`.`prom` FROM `products` WHERE `products`.`id` = ". $obj->productId;
+		$result = mysqli_query($db, $sql_query);
+		$config['product'] = Array();
+		$row = mysqli_fetch_assoc($result);
+		$config['product'][] = Array('name' => $row['name'], 'description_long' => $row['description_long'], 'priceNetto' => $row['priceNetto'], 'priceBrutto' => $row['priceBrutto'], 'pic' => $row['pic'], 'new' => $row['new'], 'prom' => $row['prom']);
+		echo json_encode($config['product']);
+	}
 }
 
 ?>
