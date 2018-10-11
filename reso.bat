@@ -1,0 +1,1 @@
+C:\Python35\Lib\site-packages\PyQt5\pyrcc5.exe .\resources.qrc -o resources_rc.py

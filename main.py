@@ -12,7 +12,7 @@ developerMode = True
 if(developerMode):
     import subprocess
     filepaths = []
-    filepaths.append("C:\Python35\Lib\site-packages\PyQt5\pyrcc5.exe .\resources.qrc -o resources_rc.py")
+    filepaths.append("reso.bat")
     filepaths.append("C:\Python35\Lib\site-packages\PyQt5\pyuic5.bat .\product.ui -o product.py")
     filepaths.append("C:\Python35\Lib\site-packages\PyQt5\pyuic5.bat .\gui.ui -o gui.py")
     for filepath in filepaths:

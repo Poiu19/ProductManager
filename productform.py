@@ -35,6 +35,7 @@ class productDialog(QDialog):
             self.product.picView3.setStyleSheet("border: 1px solid black")
             self.product.picView3.setScaledContents(True)
             self.product.productDescription.setWidget(lab)
+            self.product.productName.setText(productLoaded['name'])
 
     def closeDialog(self):
         self.product.picView1.deleteLater()
