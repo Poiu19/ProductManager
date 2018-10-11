@@ -15,6 +15,7 @@ from PyQt5.uic import *
 from functools import partial
 from gui import Ui_MainWindow
 from productform import productDialog
+from apicontroler import ApiControler
 class InterfaceWindow(QMainWindow):
     product = None
     newsContentTab = []
@@ -23,36 +24,21 @@ class InterfaceWindow(QMainWindow):
         self.createInterface()
 
     def createInterface(self):
-        #loadUi("gui.ui", self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.show()
         self.ui.newsHeader.setStyleSheet('background-color: #dbdbdb; border: 1px solid black; font: bold; font-family: Calibri, Verdana, Arial, sans-serif; font-size: 18px;')
 
     def createNewsList(self):
-        import urllib.request
-        import json
-        body = {'getData': "newsHeaders"}
-        myurl = "http://localhost/pythonAPI/api.php"
-        req = urllib.request.Request(myurl)
-        req.add_header('Content-Type', 'application/json; charset=utf-8')
-        jsondata = json.dumps(body)
-        jsondataasbytes = jsondata.encode('utf-8')
-        req.add_header('Content-Length', len(jsondataasbytes))
-        response = urllib.request.urlopen(req, jsondataasbytes)
-        data = response.read()
-        encoding = response.info().get_content_charset('utf-8')
         items = []
-        for itm in json.loads(data.decode(encoding)):
+        api = ApiControler({'getData': "newsHeaders"})
+        for itm in api.getResponse():
             items.append(itm['header'])
             self.newsContentTab.append(str(itm['content']))
         self.ui.listNews.addItems(items)
 
     def initializeEvents(self):
         self.ui.exitProgram.triggered.connect(self.exitApp)
-       # self.ui.exitProgram.triggered.connect(productDialog(self.product).closeDialog)
-       # self.listNews.itemClicked.connect(partial(self.clickedNews))
-       # self.listNews.itemEntered.connect(Partial(self.clickedNews))
         self.ui.listNews.currentItemChanged.connect(partial(self.clickedNews))
 
     def clickedNews(self, item):
@@ -66,20 +52,9 @@ class InterfaceWindow(QMainWindow):
 
     def createCategories(self):
         category_layout = QVBoxLayout()
-        import urllib.request
-        import json
-        body = {'getData': "categories"}
-        myurl = "http://localhost/pythonAPI/api.php"
-        req = urllib.request.Request(myurl)
-        req.add_header('Content-Type', 'application/json; charset=utf-8')
-        jsondata = json.dumps(body)
-        jsondataasbytes = jsondata.encode('utf-8')
-        req.add_header('Content-Length', len(jsondataasbytes))
-        response = urllib.request.urlopen(req, jsondataasbytes)
-        data = response.read()
-        encoding = response.info().get_content_charset('utf-8')
+        api = ApiControler({'getData': "categories"})
         buttons = []
-        for category in json.loads(data.decode(encoding)):
+        for category in api.getResponse():
             width = 191
             buttons.append([QPushButton(category['name']), category['id'], width, category['subcategory']])
             style = []
@@ -198,28 +173,17 @@ class InterfaceWindow(QMainWindow):
                         self.products_layout.itemAt(i).widget().deleteLater()
         if(clearTab):
             self.productsToDisplay = []
-        import urllib.request
-        import json
         self.products_layout.setColumnStretch(0, 2)
         self.products_layout.setColumnStretch(1, 3)
         self.products_layout.setColumnStretch(2, 3)
-        body = {'getData': "products", 'category': category}
-        myurl = "http://localhost/pythonAPI/api.php"
-        req = urllib.request.Request(myurl)
-        req.add_header('Content-Type', 'application/json; charset=utf-8')
-        jsondata = json.dumps(body)
-        jsondataasbytes = jsondata.encode('utf-8')
-        req.add_header('Content-Length', len(jsondataasbytes))
-        response = urllib.request.urlopen(req, jsondataasbytes)
-        data = response.read()
-        encoding = response.info().get_content_charset('utf-8')
+        api = ApiControler({'getData': "products", 'category': category})
         x = 5
         y = 5
         picWidth = 221
         picHeigth = 221
         i = 1
         row = 0
-        for product in json.loads(data.decode(encoding)):
+        for product in api.getResponse():
             newProduct = int(product['new'])
             promProduct = int(product['prom'])
             self.productsToDisplay.append([QtWidgets.QLabel(), QtWidgets.QLabel(), QtWidgets.QPushButton()])

@@ -4,6 +4,7 @@ from PyQt5 import *
 from PyQt5.uic import *
 from functools import partial
 from product import Ui_productDialog
+from apicontroler import ApiControler
 class productDialog(QDialog):
     def __init__(self, idP, parent=None):
         super(productDialog, self).__init__(parent)
@@ -16,16 +17,8 @@ class productDialog(QDialog):
         import urllib.request
         import json
         body = {'getData': "product", 'productId': idP}
-        myurl = "http://localhost/pythonAPI/api.php"
-        req = urllib.request.Request(myurl)
-        req.add_header('Content-Type', 'application/json; charset=utf-8')
-        jsondata = json.dumps(body)
-        jsondataasbytes = jsondata.encode('utf-8')
-        req.add_header('Content-Length', len(jsondataasbytes))
-        response = urllib.request.urlopen(req, jsondataasbytes)
-        data = response.read()
-        encoding = response.info().get_content_charset('utf-8')
-        for productLoaded in json.loads(data.decode(encoding)):
+        api = ApiControler({'getData': "product", 'productId': idP})
+        for productLoaded in api.getResponse():
             self.setWindowTitle(productLoaded['name'])
             self.show()
             lab = QLabel(productLoaded['description_long'])
