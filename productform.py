@@ -13,9 +13,6 @@ class productDialog(QDialog):
     def createProduct(self, idP):
         self.product = Ui_productDialog()
         self.product.setupUi(self)
-
-        import urllib.request
-        import json
         body = {'getData': "product", 'productId': idP}
         api = ApiControler({'getData': "product", 'productId': idP})
         for productLoaded in api.getResponse():
@@ -25,17 +22,16 @@ class productDialog(QDialog):
             lab.setAlignment(Qt.AlignTop | Qt.AlignLeft)
             lab.setTextFormat(Qt.RichText)
             lab.setWordWrap(1)
-            self.product.picView1.setPixmap(QtGui.QPixmap(productLoaded['pic']))
-            self.product.picView1.setStyleSheet("border: 1px solid black")
-            self.product.picView1.setScaledContents(True)
-            self.product.picView2.setPixmap(QtGui.QPixmap(productLoaded['pic'] + "new"))
-            self.product.picView2.setStyleSheet("border: 1px solid black")
-            self.product.picView2.setScaledContents(True)
-            self.product.picView3.setPixmap(QtGui.QPixmap(productLoaded['pic'] + "prom"))
-            self.product.picView3.setStyleSheet("border: 1px solid black")
-            self.product.picView3.setScaledContents(True)
+            views = [self.product.picView1, self.product.picView2, self.product.picView3]
+            self.appendProductsImages(views, productLoaded['pic'])
             self.product.productDescription.setWidget(lab)
             self.product.productName.setText(productLoaded['name'])
+
+    def appendProductsImages(self, views, mainPath):
+        for i in range(3):
+            views[i].setPixmap(QtGui.QPixmap(mainPath + str(i+1)))
+            views[i].setStyleSheet("border: 1px solid black")
+            views[i].setScaledContents(True)
 
     def closeDialog(self):
         self.product.picView1.deleteLater()

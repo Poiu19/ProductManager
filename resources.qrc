@@ -3,17 +3,16 @@
     <file alias="logo">resources/logo.png</file>
   </qresource>
   <qresource prefix="kaw01">
-    <file alias="kaw01_4880">resources/kaw01_4880.png</file>
+    <file alias="kaw01_48802">resources/kaw01_48802.JPG</file>
+    <file alias="kaw01_48803">resources/kaw01_48803.JPG</file>
+    <file alias="kaw01_48801">resources/kaw01_4880.png</file>
     <file alias="kaw01_4880new">resources/kaw01_4880new.png</file>
     <file alias="kaw01_4880prom">resources/kaw01_4880prom.png</file>
   </qresource>
-  <qresource prefix="baner">
-    <file alias="newproduct">resources/new.png</file>
-    <file alias="promproduct">resources/prom.png</file>
-  </qresource>
+  <qresource prefix="baner"/>
   <qresource prefix="stol">
     <file alias="stolmetalnew">resources/metalblatnew.jpg</file>
     <file alias="stolmetalprom">resources/metalblatprom.jpg</file>
-    <file alias="stolmetal">resources/metalblat.jpg</file>
+    <file alias="stolmetal1">resources/metalblat.jpg</file>
   </qresource>
 </RCC>

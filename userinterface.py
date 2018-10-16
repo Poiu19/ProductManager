@@ -129,11 +129,14 @@ class InterfaceWindow(QMainWindow):
         api = ApiControler({'getData': "products", 'category': category})
         for product in api.getResponse():
             self.productsToDisplay.append([QtWidgets.QLabel(), QtWidgets.QLabel(), QtWidgets.QPushButton()])
-            self.setProductPic(product, picWidth, picHeigth)
-            self.setProductDescription(product, picWidth, picHeigth)
-            self.setProductViewButton(product, picWidth, picHeigth)
+            self.setProductDetails(product, picWidth, picHeigth)
             self.addProductsToLayout()
         self.ui.scrollAreaWidgetContents_2.setLayout(self.products_layout)
+
+    def setProductDetails(self, product, width, heigth):
+        self.setProductPic(product, width, heigth)
+        self.setProductDescription(product, width, heigth)
+        self.setProductViewButton(product, width, heigth)
 
     def clearProductTab(self):
         import sip
@@ -168,7 +171,7 @@ class InterfaceWindow(QMainWindow):
         elif(promProduct == 1):
             self.productsToDisplay[-1][0].setPixmap(QtGui.QPixmap(product['pic'] + "prom"))
         else:
-            self.productsToDisplay[-1][0].setPixmap(QtGui.QPixmap(product['pic']))
+            self.productsToDisplay[-1][0].setPixmap(QtGui.QPixmap(product['pic'] + str(1)))
         self.productsToDisplay[-1][0].setScaledContents(True)
         self.productsToDisplay[-1][0].setObjectName("image"+str(product['id']))
         self.productsToDisplay[-1][0].setStyleSheet("border: 1px solid black")
@@ -194,11 +197,15 @@ class InterfaceWindow(QMainWindow):
         self.products_layout.addWidget(self.productsToDisplay[-1][1])
         self.products_layout.addWidget(self.productsToDisplay[-1][2])
 
+    def destroyChildProduct(self):
+        if self.product != None:
+            self.product.closeDialog()
+            self.product = None
+
     def clickedProduct(self, idP):
+        self.destroyChildProduct()
         self.product = productDialog(idP, self)
 
     def exitApp(self):
-        if self.product != None:
-            self.product.closeDialog()
-        self.product = None
+        self.destroyChildProduct()
         self.close()
