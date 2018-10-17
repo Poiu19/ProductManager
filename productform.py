@@ -6,9 +6,10 @@ from functools import partial
 from product import Ui_productDialog
 from apicontroler import ApiControler
 class productDialog(QDialog):
-    def __init__(self, idP, parent=None):
+    def __init__(self, idP, productInEditPanel, parent=None):
         super(productDialog, self).__init__(parent)
         self.createProduct(idP)
+        self.createEvents(idP, productInEditPanel)
 
     def createProduct(self, idP):
         self.product = Ui_productDialog()
@@ -32,6 +33,13 @@ class productDialog(QDialog):
             views[i].setPixmap(QtGui.QPixmap(mainPath + str(i+1)))
             views[i].setStyleSheet("border: 1px solid black")
             views[i].setScaledContents(True)
+
+    def createEvents(self, idP, productInEditPanel):
+        self.product.acceptProduct.accepted.connect(partial(self.assignProductIdToManagerEvent, idP, productInEditPanel))
+
+    def assignProductIdToManagerEvent(self, idP, productInEditPanel):
+        productInEditPanel.setId(idP)
+        productInEditPanel.loadProduct()
 
     def closeDialog(self):
         self.product.picView1.deleteLater()

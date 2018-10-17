@@ -23,22 +23,30 @@ FileName=$[Project-Path]main.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]product.py
+FileName=$[Project-Path]manager.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]productform.py
+FileName=$[Project-Path]product.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]resources_rc.py
+FileName=$[Project-Path]productform.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]resources_rc.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node7]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]timer.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]userinterface.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=7
+Count=9
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

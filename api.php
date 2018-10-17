@@ -89,6 +89,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 		$config['product'][] = Array('name' => $row['name'], 'description_long' => $row['description_long'], 'priceNetto' => $row['priceNetto'], 'priceBrutto' => $row['priceBrutto'], 'pic' => $row['pic'], 'new' => $row['new'], 'prom' => $row['prom']);
 		echo json_encode($config['product']);
 	}
+	if($obj->getData == 'productEditDetails')
+	{
+		$sql_query = "SELECT `products`.`id`, `products`.`code`, `products`.`length`, `products`.`width`, `products`.`heigth`, `products`.`color` FROM `products` WHERE `products`.`id` = ". $obj->productId;
+		$result = mysqli_query($db, $sql_query);
+		$config['product'] = Array();
+		$row = mysqli_fetch_assoc($result);
+		$config['product'][] = Array('code' => $row['code'], 'length' => $row['length'], 'width' => $row['width'], 'heigth' => $row['heigth'], 'color' => $row['color']);
+		echo json_encode($config['product']);
+	}
 }
 
 ?>

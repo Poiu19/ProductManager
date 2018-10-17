@@ -1,9 +1,13 @@
 #Structure responsible for the physical element of the furniture, 1 specific dimension, form
 class Form():
-    def __init__(self, length, width, thick):
+    def __init__(self, length, width, thick, name=None):
         self.setLength(length)
         self.setWidth(width)
         self.setThick(thick)
+        self.setName(name)
+
+    def setName(self, name):
+        self.__name__ = name
 
     def setLength(self, length):
         self.__length__ = length
@@ -22,6 +26,9 @@ class Form():
 
     def addThick(self, delta):
         self.setThick(self.getThick() + delta)
+
+    def getName(self):
+        return self.__name__
 
     def getLength(self):
         return self.__length__
@@ -71,12 +78,10 @@ class GroupModificator():
     def lengthMod(self, delta):
         for form in self.group.forms:
             form.addLength(delta*self.getScale())
-            print("L: " + str(form.getLength()))
 
     def widthMod(self, delta):
         for form in self.group.forms:
             form.addWidth(delta*self.getScale())
-            print("W: "+ str(form.getWidth()))
 
 #class that supports modifications of the furniture, contains the entire "logic"
 class Furniture():
@@ -84,6 +89,7 @@ class Furniture():
     groups = []
     allForms = None
     __color__ = None
+    __name__ = None
     def addMod(self, group, mod, scale):
         self.mods.append(GroupModificator(group, mod, scale))
 
@@ -101,6 +107,9 @@ class Furniture():
     def __setLength__(self, l):
         self.__length__ = l
 
+    def __setName__(self, name):
+        self.__name__ = name
+
     def getHeigth(self):
         return self.__heigth__
 
@@ -110,9 +119,11 @@ class Furniture():
     def getLength(self):
         return self.__length__
 
+    def getName(self):
+        return self.__name__
+
     def __addForms__(self, formList):
         self.allForms = FormsGroup(formList)
-
 
     def changeLength(self, newLength):
         for mod in self.mods:
@@ -135,17 +146,28 @@ class Furniture():
     def __setColor__(self, color):
         self.__color__ = color
 
+    def getColor(self):
+        return self.__color__
+
+    def printFormsDimensions(self):
+        print(self.getName() + " - " + str(self.getColor()))
+        for form in self.allForms.forms:
+            print(form.getName() + " - L: "+ str(form.getLength()) +", W: "+ str(form.getWidth()))
+
 #the class of a particular model of furniture, has the task to create
 #a particular piece of furniture which will then be modified
 #methods of this class should not be invoked from outside
 class KAW01(Furniture):
     def __init__(self, color):
+        self.__setName__("Stolik kawowy KAW01")
         self.__setDefaultDim__(900, 600, 550)
         self.__setColor__(color)
-        self.__addForms__([Form(900, 600, 18), Form(764, 464, 18), Form(764, 60, 18), Form(764, 60, 18),
-                                    Form(428, 60, 18), Form(428, 60, 18), Form(532, 120, 18), Form(532, 120, 18),
-                                    Form(532, 120, 18), Form(532, 120, 18), Form(532, 102, 18), Form(532, 102, 18),
-                                    Form(532, 102, 18), Form(532, 102, 18)])
+        self.__addForms__([ Form(900, 600, 18, "Blat górny"), Form(764, 464, 18, "Blat środkowy"),
+                            Form(764, 60, 18, "Listwy wzmacniające cz. A"), Form(764, 60, 18, "Listwy wzmacniające cz. A"),
+                            Form(428, 60, 18, "Listwy wzmacniające cz. B"), Form(428, 60, 18, "Listwy wzmacniające cz. B"),
+                            Form(532, 120, 18, "Nogi cz. A"), Form(532, 120, 18, "Nogi cz. A"), Form(532, 120, 18, "Nogi cz. A"),
+                            Form(532, 120, 18, "Nogi cz. A"), Form(532, 102, 18, "Nogi cz. B"), Form(532, 102, 18, "Nogi cz. B"),
+                            Form(532, 102, 18, "Nogi cz. B"), Form(532, 102, 18, "Nogi cz. B")])
         self.__groupForms__()
         self.__addMods__()
 
@@ -161,14 +183,8 @@ class KAW01(Furniture):
         self.addMod(self.groups[2], "wtl", 1)
         self.addMod(self.groups[3], "htl", 1)
 
-fur = KAW01(4880)
-print("600")
-fur.changeHeigth(600)
-print("500")
-fur.changeHeigth(500)
-print("550")
-fur.changeHeigth(550)
-print("Length 600")
-fur.changeLength(600)
-print("Width 500")
-fur.changeWidth(500)
+#fur = KAW01(4880)
+#fur.changeLength(800)
+#fur.changeWidth(500)
+#fur.changeHeigth(400)
+#fur.printFormsDimensions()

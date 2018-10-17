@@ -31,7 +31,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QDialogButtonBox" name="acceptProduct">
    <property name="geometry">
     <rect>
      <x>670</x>
@@ -187,7 +187,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>acceptProduct</sender>
    <signal>accepted()</signal>
    <receiver>productDialog</receiver>
    <slot>accept()</slot>
@@ -203,7 +203,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>acceptProduct</sender>
    <signal>rejected()</signal>
    <receiver>productDialog</receiver>
    <slot>reject()</slot>

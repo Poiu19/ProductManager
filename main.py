@@ -22,7 +22,6 @@ if(developerMode):
 
 from PyQt5.QtWidgets import QApplication
 from userinterface import InterfaceWindow
-
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)

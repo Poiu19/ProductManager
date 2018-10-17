@@ -16,14 +16,32 @@ from functools import partial
 from gui import Ui_MainWindow
 from productform import productDialog
 from apicontroler import ApiControler
+from manager import KAW01
+from timer import RepeatEvent
+class ProductDetails():
+    productId = None
+    forceLoad = False
+    def setId(self, id):
+        self.productId = id
+
+    def loadProduct(self):
+        api = ApiControler({'getData': "productEditDetails", 'productId': str(self.productId)})
+        for product in api.getResponse():
+            if(product['code'] == "KAW01"):
+                self.product = KAW01(int(product['color']))
+                self.forceLoad = True
+
 class InterfaceWindow(QMainWindow):
     product = None
     newsContentTab = []
     productsToDisplay = []
     products_layout = QGridLayout()
+    productInEditPanel = None
+    repeatAbleEvents = []
     def __init__(self, parent=None):
         super(InterfaceWindow, self).__init__(parent)
         self.createInterface()
+        self.productInEditPanel = ProductDetails()
 
     def createInterface(self):
         self.ui = Ui_MainWindow()
@@ -42,6 +60,8 @@ class InterfaceWindow(QMainWindow):
     def initializeEvents(self):
         self.ui.exitProgram.triggered.connect(self.exitApp)
         self.ui.listNews.currentItemChanged.connect(partial(self.clickedNews))
+        self.ui.acceptNewDim.clicked.connect(self.acceptDim)
+        self.repeatAbleEvents.append(RepeatEvent(1.0, self.loadManager))
 
     def clickedNews(self, item):
         lab = QLabel(self.newsContentTab[self.ui.listNews.currentRow()])
@@ -51,6 +71,21 @@ class InterfaceWindow(QMainWindow):
         self.ui.newsHeader.setText(QListWidgetItem(item).text())
         self.ui.newsHeader.setStyleSheet('background-color: #dbdbdb; border: 1px solid black; font: bold; font-family: Calibri, Verdana, Arial, sans-serif; font-size: 18px;')
         self.ui.newsContent.setWidget(lab)
+
+    def loadManager(self):
+        if(self.productInEditPanel.productId != None and self.productInEditPanel.forceLoad == True):
+            self.ui.lengthBox.setText(str(self.productInEditPanel.product.getLength()))
+            self.ui.widthBox.setText(str(self.productInEditPanel.product.getWidth()))
+            self.ui.heigthBox.setText(str(self.productInEditPanel.product.getHeigth()))
+            self.productInEditPanel.forceLoad = False
+            print(str(self.productInEditPanel.productId))
+
+    def acceptDim(self):
+        if(self.productInEditPanel.productId != None):
+            self.productInEditPanel.product.changeLength(int(self.ui.lengthBox.displayText()))
+            self.productInEditPanel.product.changeWidth(int(self.ui.widthBox.displayText()))
+            self.productInEditPanel.product.changeHeigth(int(self.ui.heigthBox.displayText()))
+            self.productInEditPanel.product.printFormsDimensions()
 
     def createCategories(self):
         category_layout = QVBoxLayout()
@@ -204,8 +239,10 @@ class InterfaceWindow(QMainWindow):
 
     def clickedProduct(self, idP):
         self.destroyChildProduct()
-        self.product = productDialog(idP, self)
+        self.product = productDialog(idP, self.productInEditPanel, self)
 
     def exitApp(self):
+        for event in self.repeatAbleEvents:
+            event.stop()
         self.destroyChildProduct()
         self.close()
