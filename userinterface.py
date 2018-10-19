@@ -6,7 +6,7 @@ from functools import partial
 from gui import Ui_MainWindow
 from productform import productDialog
 from apicontroler import ApiControler
-from manager import KAW01
+from manager import KAW01, STBR01
 from timer import RepeatEvent
 class ProductDetails():
     productId = None
@@ -19,6 +19,9 @@ class ProductDetails():
         for product in api.getResponse():
             if(product['code'] == "KAW01"):
                 self.product = KAW01(int(product['color']))
+                self.forceLoad = True
+            if(product['code'] == "STBR01"):
+                self.product = STBR01(int(product['color']))
                 self.forceLoad = True
 
 class InterfaceWindow(QMainWindow):

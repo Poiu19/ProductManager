@@ -39,6 +39,15 @@ class Form():
     def getThick(self):
         return self.__thick__
 
+    def getMaterialType(self):
+        import globals
+        return globals.MATERIAL_PLATE
+
+class MetalElement(Form):
+    def getMaterialType(self):
+        import globals
+        return globals.MATERIAL_METAL
+
 #this class is responsible for the group of Form() to change their parameters in the same way
 class FormsGroup():
     forms = []
@@ -164,6 +173,9 @@ class Furniture():
                 ruleResult = self.checkRules(globals.RULE_MAX_HEIGTH, newHeigth)
                 if(ruleResult != True):
                     return ruleResult
+                ruleResult = self.checkRules(globals.RULE_EXACT_HEIGTH, newHeigth)
+                if(ruleResult != True):
+                    return ruleResult
                 mod.modExec(newHeigth - self.getHeigth())
         self.__setHeigth__(newHeigth)
         return True
@@ -184,7 +196,49 @@ class Furniture():
     def printFormsDimensions(self):
         print(self.getName() + " - " + str(self.getColor()))
         for form in self.allForms.forms:
-            print(form.getName() + " - L: "+ str(form.getLength()) +", W: "+ str(form.getWidth()))
+            print(form.getName() + " - L: "+ str(form.getLength()) +", W: "+ str(form.getWidth()) + ", MAT: " + str(form.getMaterialType()))
+
+class Rule():
+    execution = []
+    #ruleType should be int, in fact it's index of table
+    def __init__(self, ruleType, value):
+        self.__createExecutionTable__()
+        self.type = ruleType
+        self.value = value
+
+    def __createExecutionTable__(self):
+        self.execution = [  self.__minValue__, #minLength [0]
+                            self.__maxValue__, #maxLength [1]
+                            self.__minValue__, #minWidth [2]
+                            self.__maxValue__, #maxWidth [3]
+                            self.__minValue__, #minHeigth [4]
+                            self.__maxValue__, #maxHeigth [5]
+                            self.__exactValues__, #exactHeigth [6]
+                            ]
+
+    def execIfCorrectRule(self, ruleType, value):
+        if self.type == ruleType:
+            return self.execution[self.type](value)
+        return True
+
+    def __minValue__(self, newValue):
+        if(newValue < self.value):
+            import globals
+            return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
+        return True
+
+    def __maxValue__(self, newValue):
+        if(newValue > self.value):
+            import globals
+            return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
+        return True
+
+    def __exactValues__(self, newValue):
+        for value in self.value:
+            if(value == newValue):
+                return True
+        import globals
+        return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
 
 #the class of a particular model of furniture, has the task to create
 #a particular piece of furniture which will then be modified
@@ -225,36 +279,31 @@ class KAW01(Furniture):
         self.rules.append(Rule(globals.RULE_MIN_HEIGTH, 450))
         self.rules.append(Rule(globals.RULE_MAX_HEIGTH, 600))
 
-class Rule():
-    execution = []
-    #ruleType should be int, in fact it's index of table
-    def __init__(self, ruleType, value):
-        self.__createExecutionTable__()
-        self.type = ruleType
-        self.value = value
+class STBR01(Furniture):
+    def __init__(self, color):
+        self.__setName__("Stolik - Biurko robocze - STBR01")
+        self.__setDefaultDim__(1200, 600, 728)
+        self.__setColor__(color)
+        self.__addForms__([ Form(1200, 600, 18, "Blat"), MetalElement(710, 60, 0, "Noga FI-60"), MetalElement(710, 60, 0, "Noga FI-60"),
+                            MetalElement(710, 60, 0, "Noga FI-60"), MetalElement(710, 60, 0, "Noga FI-60")])
+        self.__groupForms__()
+        self.__addMods__()
+        self.__addRules__()
 
-    def __createExecutionTable__(self):
-        self.execution = [  self.__minValue__, #minLength [0]
-                            self.__maxValue__, #maxLength [1]
-                            self.__minValue__, #minWidth [2]
-                            self.__maxValue__, #maxWidth [3]
-                            self.__minValue__, #minHeigth [4]
-                            self.__maxValue__, #maxHeigth [5]
-                            ]
+    def __groupForms__(self):
+        self.groups.append(FormsGroup(self.allForms.forms[0:1])) #dlugosc = dlugosc
+        self.groups.append(FormsGroup(self.allForms.forms[0:1])) #szerokosc = szerokosc
+        self.groups.append(FormsGroup(self.allForms.forms[1:5])) #wysokosc = dlugosc
 
-    def execIfCorrectRule(self, ruleType, value):
-        if self.type == ruleType:
-            return self.execution[self.type](value)
-        return True
+    def __addMods__(self):
+        self.addMod(self.groups[0], "ltl", 1)
+        self.addMod(self.groups[1], "wtw", 1)
+        self.addMod(self.groups[2], "htl", 1)
 
-    def __minValue__(self, newValue):
-        if(newValue < self.value):
-            import globals
-            return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
-        return True
-
-    def __maxValue__(self, newValue):
-        if(newValue > self.value):
-            import globals
-            return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
-        return True
+    def __addRules__(self):
+        import globals
+        self.rules.append(Rule(globals.RULE_MIN_LENGTH, 800))
+        self.rules.append(Rule(globals.RULE_MAX_LENGTH, 1350))
+        self.rules.append(Rule(globals.RULE_MIN_WIDTH, 600))
+        self.rules.append(Rule(globals.RULE_MAX_WIDTH, 1000))
+        self.rules.append(Rule(globals.RULE_EXACT_HEIGTH, [728, 838, 1118]))
