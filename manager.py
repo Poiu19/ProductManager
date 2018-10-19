@@ -87,6 +87,7 @@ class GroupModificator():
 class Furniture():
     mods = []
     groups = []
+    rules = []
     allForms = None
     __color__ = None
     __name__ = None
@@ -128,20 +129,44 @@ class Furniture():
     def changeLength(self, newLength):
         for mod in self.mods:
             if(mod.getMod() == "ltw" or mod.getMod() == "ltl"):
+                import globals
+                ruleResult = self.checkRules(globals.RULE_MIN_LENGTH, newLength)
+                if(ruleResult != True):
+                    return ruleResult
+                ruleResult = self.checkRules(globals.RULE_MAX_LENGTH, newLength)
+                if(ruleResult != True):
+                    return ruleResult
                 mod.modExec(newLength - self.getLength())
         self.__setLength__(newLength)
+        return True
 
     def changeWidth(self, newWidth):
         for mod in self.mods:
             if(mod.getMod() == "wtl" or mod.getMod() == "wtw"):
+                import globals
+                ruleResult = self.checkRules(globals.RULE_MIN_WIDTH, newWidth)
+                if(ruleResult != True):
+                    return ruleResult
+                ruleResult = self.checkRules(globals.RULE_MAX_WIDTH, newWidth)
+                if(ruleResult != True):
+                    return ruleResult
                 mod.modExec(newWidth - self.getWidth())
         self.__setWidth__(newWidth)
+        return True
 
     def changeHeigth(self, newHeigth):
         for mod in self.mods:
             if(mod.getMod() == "htl" or mod.getMod() == "htw"):
+                import globals
+                ruleResult = self.checkRules(globals.RULE_MIN_HEIGTH, newHeigth)
+                if(ruleResult != True):
+                    return ruleResult
+                ruleResult = self.checkRules(globals.RULE_MAX_HEIGTH, newHeigth)
+                if(ruleResult != True):
+                    return ruleResult
                 mod.modExec(newHeigth - self.getHeigth())
         self.__setHeigth__(newHeigth)
+        return True
 
     def __setColor__(self, color):
         self.__color__ = color
@@ -149,6 +174,13 @@ class Furniture():
     def getColor(self):
         return self.__color__
 
+    def checkRules(self, ruleType, value):
+        ruleResult = True
+        for rule in self.rules:
+            ruleResult = rule.execIfCorrectRule(ruleType, value)
+            if(ruleResult != True):
+                break
+        return ruleResult
     def printFormsDimensions(self):
         print(self.getName() + " - " + str(self.getColor()))
         for form in self.allForms.forms:
@@ -170,6 +202,7 @@ class KAW01(Furniture):
                             Form(532, 102, 18, "Nogi cz. B"), Form(532, 102, 18, "Nogi cz. B")])
         self.__groupForms__()
         self.__addMods__()
+        self.__addRules__()
 
     def __groupForms__(self):
         self.groups.append(FormsGroup(self.allForms.forms[0:4])) #dlugosc = dlugosc
@@ -183,8 +216,45 @@ class KAW01(Furniture):
         self.addMod(self.groups[2], "wtl", 1)
         self.addMod(self.groups[3], "htl", 1)
 
-#fur = KAW01(4880)
-#fur.changeLength(800)
-#fur.changeWidth(500)
-#fur.changeHeigth(400)
-#fur.printFormsDimensions()
+    def __addRules__(self):
+        import globals
+        self.rules.append(Rule(globals.RULE_MIN_LENGTH, 800))
+        self.rules.append(Rule(globals.RULE_MAX_LENGTH, 1200))
+        self.rules.append(Rule(globals.RULE_MIN_WIDTH, 600))
+        self.rules.append(Rule(globals.RULE_MAX_WIDTH, 800))
+        self.rules.append(Rule(globals.RULE_MIN_HEIGTH, 450))
+        self.rules.append(Rule(globals.RULE_MAX_HEIGTH, 600))
+
+class Rule():
+    execution = []
+    #ruleType should be int, in fact it's index of table
+    def __init__(self, ruleType, value):
+        self.__createExecutionTable__()
+        self.type = ruleType
+        self.value = value
+
+    def __createExecutionTable__(self):
+        self.execution = [  self.__minValue__, #minLength [0]
+                            self.__maxValue__, #maxLength [1]
+                            self.__minValue__, #minWidth [2]
+                            self.__maxValue__, #maxWidth [3]
+                            self.__minValue__, #minHeigth [4]
+                            self.__maxValue__, #maxHeigth [5]
+                            ]
+
+    def execIfCorrectRule(self, ruleType, value):
+        if self.type == ruleType:
+            return self.execution[self.type](value)
+        return True
+
+    def __minValue__(self, newValue):
+        if(newValue < self.value):
+            import globals
+            return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
+        return True
+
+    def __maxValue__(self, newValue):
+        if(newValue > self.value):
+            import globals
+            return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
+        return True

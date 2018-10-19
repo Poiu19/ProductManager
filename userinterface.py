@@ -1,13 +1,3 @@
-#-------------------------------------------------------------------------------
-# Name:        userinterface
-# Purpose:     GUI
-#
-# Author:      Merchelski Patryk
-#
-# Created:     18.09.2018
-# Copyright:   (c) Merchelski Patryk 2018
-# Licence:
-#-------------------------------------------------------------------------------
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import *
@@ -82,9 +72,18 @@ class InterfaceWindow(QMainWindow):
 
     def acceptDim(self):
         if(self.productInEditPanel.productId != None):
-            self.productInEditPanel.product.changeLength(int(self.ui.lengthBox.displayText()))
-            self.productInEditPanel.product.changeWidth(int(self.ui.widthBox.displayText()))
-            self.productInEditPanel.product.changeHeigth(int(self.ui.heigthBox.displayText()))
+            errorHandler = self.productInEditPanel.product.changeLength(int(self.ui.lengthBox.displayText()))
+            if errorHandler != True:
+                self.ui.lengthBox.setText(str(self.productInEditPanel.product.getLength()))
+                print (errorHandler)
+            errorHandler = self.productInEditPanel.product.changeWidth(int(self.ui.widthBox.displayText()))
+            if errorHandler != True:
+                self.ui.widthBox.setText(str(self.productInEditPanel.product.getWidth()))
+                print (errorHandler)
+            errorHandler = self.productInEditPanel.product.changeHeigth(int(self.ui.heigthBox.displayText()))
+            if errorHandler != True:
+                self.ui.heigthBox.setText(str(self.productInEditPanel.product.getHeigth()))
+                print (errorHandler)
             self.productInEditPanel.product.printFormsDimensions()
 
     def createCategories(self):

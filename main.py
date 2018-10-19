@@ -1,6 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        main
-# Purpose:     Manager of app
+# Name:        Product Manager
 #
 # Author:      Merchelski Patryk
 #
