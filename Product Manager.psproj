@@ -15,38 +15,42 @@ FileName=$[Project-Path]apicontroler.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]gui.py
+FileName=$[Project-Path]globals.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node2]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]main.py
+FileName=$[Project-Path]gui.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node3]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]manager.py
+FileName=$[Project-Path]main.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]product.py
+FileName=$[Project-Path]manager.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node5]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]productform.py
+FileName=$[Project-Path]product.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]resources_rc.py
+FileName=$[Project-Path]productform.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]timer.py
+FileName=$[Project-Path]resources_rc.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]timer.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]userinterface.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=9
+Count=10
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

@@ -9,3 +9,9 @@ product.~py
 gui.~py
 resources_rc.py
 resources_rc.~py
+globals.~py
+main.~py
+manager.~py
+Product Manager.~psproj
+timer.~py
+userinterface.~py

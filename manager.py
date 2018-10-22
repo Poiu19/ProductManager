@@ -1,3 +1,20 @@
+from apicontroler import ApiControler
+#container for Furniture, it loads parametrs from Db
+class ProductDetails():
+    productId = None
+    forceLoad = False
+    def setId(self, id):
+        self.productId = id
+
+    def loadProduct(self):
+        api = ApiControler({'getData': "productEditDetails", 'productId': str(self.productId)})
+        for product in api.getResponse():
+            if(product['code'] == "KAW01"):
+                self.product = KAW01(int(product['color']))
+                self.forceLoad = True
+            if(product['code'] == "STBR01"):
+                self.product = STBR01(int(product['color']))
+                self.forceLoad = True
 #Structure responsible for the physical element of the furniture, 1 specific dimension, form
 class Form():
     def __init__(self, length, width, thick, name=None):
@@ -41,9 +58,14 @@ class Form():
 
     def getMaterialType(self):
         import globals
+        return globals.MATERIAL_NONE
+
+class ElementLaminatedBoard(Form):
+    def getMaterialType(self):
+        import globals
         return globals.MATERIAL_PLATE
 
-class MetalElement(Form):
+class ElementMetal(Form):
     def getMaterialType(self):
         import globals
         return globals.MATERIAL_METAL
@@ -194,9 +216,10 @@ class Furniture():
                 break
         return ruleResult
     def printFormsDimensions(self):
+        import globals
         print(self.getName() + " - " + str(self.getColor()))
         for form in self.allForms.forms:
-            print(form.getName() + " - L: "+ str(form.getLength()) +", W: "+ str(form.getWidth()) + ", MAT: " + str(form.getMaterialType()))
+            print(form.getName() + " - L: "+ str(form.getLength()) +", W: "+ str(form.getWidth()) + ", MAT: " + globals.MATERIAL_NAME[form.getMaterialType()])
 
 class Rule():
     execution = []
@@ -240,6 +263,15 @@ class Rule():
         import globals
         return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
 
+class ExtraElements():
+    def __init__(self, group):
+        self.allForms = group
+
+"""
+TODO:
+    ADD SPECIFIC CLASS FOR FURNITURE THAT HAVE SPECIAL STUFF (EXAMPLE: DRAWER)
+"""
+
 #the class of a particular model of furniture, has the task to create
 #a particular piece of furniture which will then be modified
 #methods of this class should not be invoked from outside
@@ -248,12 +280,12 @@ class KAW01(Furniture):
         self.__setName__("Stolik kawowy KAW01")
         self.__setDefaultDim__(900, 600, 550)
         self.__setColor__(color)
-        self.__addForms__([ Form(900, 600, 18, "Blat górny"), Form(764, 464, 18, "Blat środkowy"),
-                            Form(764, 60, 18, "Listwy wzmacniające cz. A"), Form(764, 60, 18, "Listwy wzmacniające cz. A"),
-                            Form(428, 60, 18, "Listwy wzmacniające cz. B"), Form(428, 60, 18, "Listwy wzmacniające cz. B"),
-                            Form(532, 120, 18, "Nogi cz. A"), Form(532, 120, 18, "Nogi cz. A"), Form(532, 120, 18, "Nogi cz. A"),
-                            Form(532, 120, 18, "Nogi cz. A"), Form(532, 102, 18, "Nogi cz. B"), Form(532, 102, 18, "Nogi cz. B"),
-                            Form(532, 102, 18, "Nogi cz. B"), Form(532, 102, 18, "Nogi cz. B")])
+        self.__addForms__([ ElementLaminatedBoard(900, 600, 18, "Blat górny"), ElementLaminatedBoard(764, 464, 18, "Blat środkowy"),
+                            ElementLaminatedBoard(764, 60, 18, "Listwy wzmacniające cz. A"), ElementLaminatedBoard(764, 60, 18, "Listwy wzmacniające cz. A"),
+                            ElementLaminatedBoard(428, 60, 18, "Listwy wzmacniające cz. B"), ElementLaminatedBoard(428, 60, 18, "Listwy wzmacniające cz. B"),
+                            ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"), ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"), ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"),
+                            ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"), ElementLaminatedBoard(532, 102, 18, "Nogi cz. B"), ElementLaminatedBoard(532, 102, 18, "Nogi cz. B"),
+                            ElementLaminatedBoard(532, 102, 18, "Nogi cz. B"), ElementLaminatedBoard(532, 102, 18, "Nogi cz. B")])
         self.__groupForms__()
         self.__addMods__()
         self.__addRules__()
@@ -284,8 +316,8 @@ class STBR01(Furniture):
         self.__setName__("Stolik - Biurko robocze - STBR01")
         self.__setDefaultDim__(1200, 600, 728)
         self.__setColor__(color)
-        self.__addForms__([ Form(1200, 600, 18, "Blat"), MetalElement(710, 60, 0, "Noga FI-60"), MetalElement(710, 60, 0, "Noga FI-60"),
-                            MetalElement(710, 60, 0, "Noga FI-60"), MetalElement(710, 60, 0, "Noga FI-60")])
+        self.__addForms__([ ElementLaminatedBoard(1200, 600, 18, "Blat"), ElementMetal(710, 60, 0, "Noga FI-60"), ElementMetal(710, 60, 0, "Noga FI-60"),
+                            ElementMetal(710, 60, 0, "Noga FI-60"), ElementMetal(710, 60, 0, "Noga FI-60")])
         self.__groupForms__()
         self.__addMods__()
         self.__addRules__()
