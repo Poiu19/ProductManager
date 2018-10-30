@@ -17,7 +17,16 @@ ERROR_RULE = [  "PRZEKROCZONO MINIMALNĄ DŁUGOŚĆ",
 MATERIAL_NONE = 0
 MATERIAL_PLATE = 1
 MATERIAL_METAL = 2
+MATERIAL_GLASS = 3
+MATERIAL_MDF19 = 4
 
 MATERIAL_NAME = [   "NIEOKREŚLONE",
                     "PŁYTA LAMINOWANA",
-                    "METAL"]
+                    "METAL",
+                    "SZKŁO",
+                    "PŁľYTA MDF #19"]
+
+SLIDE_NONE = 0
+SLIDE_PK44 = 1
+SLIDE_PK05 = 2
+SLIDE_PK06 = 3

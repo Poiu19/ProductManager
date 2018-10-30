@@ -38,6 +38,9 @@ class productDialog(QDialog):
         self.product.acceptProduct.accepted.connect(partial(self.assignProductIdToManagerEvent, idP, productInEditPanel))
 
     def assignProductIdToManagerEvent(self, idP, productInEditPanel):
+        if(productInEditPanel.productId != None):
+            productInEditPanel.product.destroy()
+            productInEditPanel.product = None
         productInEditPanel.setId(idP)
         productInEditPanel.loadProduct()
 

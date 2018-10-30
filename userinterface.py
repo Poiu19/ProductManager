@@ -6,7 +6,7 @@ from functools import partial
 from gui import Ui_MainWindow
 from productform import productDialog
 from apicontroler import ApiControler
-from manager import ProductDetails, KAW01, STBR01
+from furnitures import *
 from timer import RepeatEvent
 
 class InterfaceWindow(QMainWindow):
@@ -72,7 +72,7 @@ class InterfaceWindow(QMainWindow):
             if errorHandler != True:
                 self.ui.heigthBox.setText(str(self.productInEditPanel.product.getHeigth()))
                 print (errorHandler)
-            self.productInEditPanel.product.printFormsDimensions()
+            print(self.productInEditPanel.product.toString())
 
     def createCategories(self):
         category_layout = QVBoxLayout()

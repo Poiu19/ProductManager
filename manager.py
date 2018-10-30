@@ -1,20 +1,3 @@
-from apicontroler import ApiControler
-#container for Furniture, it loads parametrs from Db
-class ProductDetails():
-    productId = None
-    forceLoad = False
-    def setId(self, id):
-        self.productId = id
-
-    def loadProduct(self):
-        api = ApiControler({'getData': "productEditDetails", 'productId': str(self.productId)})
-        for product in api.getResponse():
-            if(product['code'] == "KAW01"):
-                self.product = KAW01(int(product['color']))
-                self.forceLoad = True
-            if(product['code'] == "STBR01"):
-                self.product = STBR01(int(product['color']))
-                self.forceLoad = True
 #Structure responsible for the physical element of the furniture, 1 specific dimension, form
 class Form():
     def __init__(self, length, width, thick, name=None):
@@ -60,6 +43,10 @@ class Form():
         import globals
         return globals.MATERIAL_NONE
 
+    def toString(self):
+        import globals
+        return self.getName() + " - L: " + str(self.getLength()) + ", W: " + str(self.getWidth()) + ", MAT: " + globals.MATERIAL_NAME[self.getMaterialType()];
+
 class ElementLaminatedBoard(Form):
     def getMaterialType(self):
         import globals
@@ -70,11 +57,22 @@ class ElementMetal(Form):
         import globals
         return globals.MATERIAL_METAL
 
+class ElementMDF19(Form):
+    def getMaterialType(self):
+        import globals
+        return globals.MATERIAL_MDF19
+
 #this class is responsible for the group of Form() to change their parameters in the same way
 class FormsGroup():
     forms = []
     def __init__(self, forms):
         self.forms = forms
+
+    def toString(self):
+        group = "";
+        for form in self.forms:
+            group = group + form.toString() + "\n"
+        return group
 
 #this class is responsible for modyfing forms placed in groups by chosen modification (mod)
 class GroupModificator():
@@ -116,6 +114,7 @@ class GroupModificator():
 
 #class that supports modifications of the furniture, contains the entire "logic"
 class Furniture():
+    extraElements = []
     mods = []
     groups = []
     rules = []
@@ -211,16 +210,26 @@ class Furniture():
     def checkRules(self, ruleType, value):
         ruleResult = True
         for rule in self.rules:
-            ruleResult = rule.execIfCorrectRule(ruleType, value)
-            if(ruleResult != True):
-                break
+            if rule.isCorrectRule(ruleType) == True:
+                ruleResult = rule.execRule(value)
+                if(ruleResult != True):
+                    break
+            #ruleResult = rule.execIfCorrectRule(ruleType, value)
+            #if(ruleResult != True):
+                #break
         return ruleResult
-    def printFormsDimensions(self):
+    def toString(self):
         import globals
-        print(self.getName() + " - " + str(self.getColor()))
+        output = (self.getName() + " - " + str(self.getColor()) + "\n")
         for form in self.allForms.forms:
-            print(form.getName() + " - L: "+ str(form.getLength()) +", W: "+ str(form.getWidth()) + ", MAT: " + globals.MATERIAL_NAME[form.getMaterialType()])
-
+            output = output + form.toString() + "\n"
+        return output
+    def destroy(self):
+        self.rules.clear()
+        self.mods.clear()
+        self.allForms.forms.clear()
+        self.extraElements.clear()
+        self.groups.clear()
 class Rule():
     execution = []
     #ruleType should be int, in fact it's index of table
@@ -239,10 +248,19 @@ class Rule():
                             self.__exactValues__, #exactHeigth [6]
                             ]
 
-    def execIfCorrectRule(self, ruleType, value):
-        if self.type == ruleType:
-            return self.execution[self.type](value)
-        return True
+    def isCorrectRule(self, ruleType):
+        if (self.type == ruleType):
+            return True
+        return False
+
+    def execRule(self, value):
+        return self.execution[self.type](value)
+
+    #TO REMOVE; holding in case of unexpected errors after refactoring
+    #def execIfCorrectRule(self, ruleType, value):
+        #if self.isCorrectRule(ruleType) == True:
+            #return self.execRule(value)
+        #return True
 
     def __minValue__(self, newValue):
         if(newValue < self.value):
@@ -264,78 +282,46 @@ class Rule():
         return globals.ERROR_RULE[self.type] + ": " + str(self.value) + " [mm]"
 
 class ExtraElements():
-    def __init__(self, group):
+    def __setForms__(self, group):
         self.allForms = group
+
+class Drawer(ExtraElements):
+    __length__ = 0
+    __width__ = 0
+    __heigth__ = 0
+    def setLength(self, length):
+        self.__length__ = length
+
+    def setWidth(self, width):
+        self.__width__ = width
+
+    def setHeigth(self, heigth):
+        self.__heigth__ = heigth
+
+    def setSlide(self, slideType, length):
+        self.slide = slideType
+        import globals
+        correctValue = False
+        self.acceptAbleSlideValues = []
+        if slideType == globals.SLIDE_PK44:
+            self.acceptAbleSlideValues = [250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
+        elif slideType == globals.SLIDE_PK05:
+            self.acceptAbleSlideValues = [250, 300, 350, 400, 450, 500, 550, 600]
+        elif slideType == globals.SLIDE_PK06:
+            self.acceptAbleSlideValues = [300, 350, 400, 450, 500, 550]
+        for value in self.acceptAbleSlideValues:
+            if(value == length):
+                correctValue = True
+        if(correctValue == False):
+            return correctValue
+        self.slideLength = length
+        return True
+
+    def changeSlideLength(self, newLength):
+        if (self.setSlide(self.slide, newLength) == False):
+            print("Błędna długość prowadnicy, akceptowalne wartosci: ", self.acceptAbleSlideValues)
 
 """
 TODO:
     ADD SPECIFIC CLASS FOR FURNITURE THAT HAVE SPECIAL STUFF (EXAMPLE: DRAWER)
 """
-
-#the class of a particular model of furniture, has the task to create
-#a particular piece of furniture which will then be modified
-#methods of this class should not be invoked from outside
-class KAW01(Furniture):
-    def __init__(self, color):
-        self.__setName__("Stolik kawowy KAW01")
-        self.__setDefaultDim__(900, 600, 550)
-        self.__setColor__(color)
-        self.__addForms__([ ElementLaminatedBoard(900, 600, 18, "Blat górny"), ElementLaminatedBoard(764, 464, 18, "Blat środkowy"),
-                            ElementLaminatedBoard(764, 60, 18, "Listwy wzmacniające cz. A"), ElementLaminatedBoard(764, 60, 18, "Listwy wzmacniające cz. A"),
-                            ElementLaminatedBoard(428, 60, 18, "Listwy wzmacniające cz. B"), ElementLaminatedBoard(428, 60, 18, "Listwy wzmacniające cz. B"),
-                            ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"), ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"), ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"),
-                            ElementLaminatedBoard(532, 120, 18, "Nogi cz. A"), ElementLaminatedBoard(532, 102, 18, "Nogi cz. B"), ElementLaminatedBoard(532, 102, 18, "Nogi cz. B"),
-                            ElementLaminatedBoard(532, 102, 18, "Nogi cz. B"), ElementLaminatedBoard(532, 102, 18, "Nogi cz. B")])
-        self.__groupForms__()
-        self.__addMods__()
-        self.__addRules__()
-
-    def __groupForms__(self):
-        self.groups.append(FormsGroup(self.allForms.forms[0:4])) #dlugosc = dlugosc
-        self.groups.append(FormsGroup(self.allForms.forms[0:2])) #szerokosc = szerokosc
-        self.groups.append(FormsGroup(self.allForms.forms[4:6])) #szerokosc = dlugosc
-        self.groups.append(FormsGroup(self.allForms.forms[6:14])) #wysokosc = dlugosc
-
-    def __addMods__(self):
-        self.addMod(self.groups[0], "ltl", 1)
-        self.addMod(self.groups[1], "wtw", 1)
-        self.addMod(self.groups[2], "wtl", 1)
-        self.addMod(self.groups[3], "htl", 1)
-
-    def __addRules__(self):
-        import globals
-        self.rules.append(Rule(globals.RULE_MIN_LENGTH, 800))
-        self.rules.append(Rule(globals.RULE_MAX_LENGTH, 1200))
-        self.rules.append(Rule(globals.RULE_MIN_WIDTH, 600))
-        self.rules.append(Rule(globals.RULE_MAX_WIDTH, 800))
-        self.rules.append(Rule(globals.RULE_MIN_HEIGTH, 450))
-        self.rules.append(Rule(globals.RULE_MAX_HEIGTH, 600))
-
-class STBR01(Furniture):
-    def __init__(self, color):
-        self.__setName__("Stolik - Biurko robocze - STBR01")
-        self.__setDefaultDim__(1200, 600, 728)
-        self.__setColor__(color)
-        self.__addForms__([ ElementLaminatedBoard(1200, 600, 18, "Blat"), ElementMetal(710, 60, 0, "Noga FI-60"), ElementMetal(710, 60, 0, "Noga FI-60"),
-                            ElementMetal(710, 60, 0, "Noga FI-60"), ElementMetal(710, 60, 0, "Noga FI-60")])
-        self.__groupForms__()
-        self.__addMods__()
-        self.__addRules__()
-
-    def __groupForms__(self):
-        self.groups.append(FormsGroup(self.allForms.forms[0:1])) #dlugosc = dlugosc
-        self.groups.append(FormsGroup(self.allForms.forms[0:1])) #szerokosc = szerokosc
-        self.groups.append(FormsGroup(self.allForms.forms[1:5])) #wysokosc = dlugosc
-
-    def __addMods__(self):
-        self.addMod(self.groups[0], "ltl", 1)
-        self.addMod(self.groups[1], "wtw", 1)
-        self.addMod(self.groups[2], "htl", 1)
-
-    def __addRules__(self):
-        import globals
-        self.rules.append(Rule(globals.RULE_MIN_LENGTH, 800))
-        self.rules.append(Rule(globals.RULE_MAX_LENGTH, 1350))
-        self.rules.append(Rule(globals.RULE_MIN_WIDTH, 600))
-        self.rules.append(Rule(globals.RULE_MAX_WIDTH, 1000))
-        self.rules.append(Rule(globals.RULE_EXACT_HEIGTH, [728, 838, 1118]))
